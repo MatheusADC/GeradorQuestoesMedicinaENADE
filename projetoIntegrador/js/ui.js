@@ -31,7 +31,16 @@ const elements = {
   formContainer: document.getElementById('form-container'),
   formLoader: document.getElementById('form-loader'),
   formFieldset: document.getElementById('form-fieldset'),
-  createQuestionForm: document.getElementById('create-question-form'),  
+  createQuestionForm: document.getElementById('create-question-form'), 
+  correctAnswer: document.getElementById('correctAnswer'), 
+  explanation: document.getElementById('explanation'),
+  alternatives: {
+        A: document.getElementById('alternativeA'),
+        B: document.getElementById('alternativeB'),
+        C: document.getElementById('alternativeC'),
+        D: document.getElementById('alternativeD'),
+        E: document.getElementById('alternativeE'),
+  }
 };
 
 // --- Funções de Renderização ---
@@ -169,12 +178,21 @@ export const populateQuestionForm = (question) => {
   elements.explanation.value = question.explanation || '';
 
   // Preenche as alternativas
-  for (const letter of ['A', 'B', 'C', 'D', 'E']) {
-    const input = document.getElementById(`alternative${letter}`);
-    if (input) {
-      input.value = question.alternatives[letter] || '';
+    for (const letter of ['A', 'B', 'C', 'D', 'E']) {
+        const input = elements.alternatives[letter];
+        if (input) {
+            input.value = question.alternatives?.[letter] || '';
+            console.log(`Alternativa ${letter} preenchida com:`, input.value);
+        } else {
+            console.warn(`Input da alternativa ${letter} não encontrado!`);
+        }
     }
-  }
+
+   // Preenche a resposta correta (apenas a letra)
+    if (question.correctAnswer) {
+        console.log("resposta correta: " + question.correctAnswer)
+        elements.correctAnswer.value = question.correctAnswer;
+    }
 };
 
 export const showQuestionModal = (question) => {
