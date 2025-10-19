@@ -3,23 +3,40 @@ import * as api from './api.js';
 import * as ui from './ui.js';
 import * as state from './state.js';
 
-
 // --- Funções de Handler ---
-
 async function handlePromptFormSubmit(e) {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const promptData = Object.fromEntries(formData.entries());
-  ui.showFormLoader();
-  try {
-    const generatedQuestion = await api.generateQuestionFromPrompt(promptData);
-    ui.populateQuestionForm(generatedQuestion);
-  } catch (error) {
-    console.error("Erro ao gerar questão:", error);
-    ui.showAlert('Houve um erro com a IA. Tente novamente.', 'danger');
-  } finally {
-    ui.hideFormLoader();
-  }
+    e.preventDefault();
+
+    // Pega os valores do formulário
+    const especialidade = document.getElementById('subjectArea').value;
+    const dificuldade = document.getElementById('difficultyLevel').value;
+    const prompt = document.getElementById('questionPrompt').value;
+
+    // Monta o JSON
+    const payload = {
+        especialidade,
+        dificuldade,
+        prompt
+    };
+
+    ui.showFormLoader();
+    try {
+        // Chama o endpoint do Flask
+        const response = await fetch('http://localhost:5000/gerar_questao', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        ui.populateQuestionForm(data);
+
+    } catch (error) {
+        console.error("Erro ao gerar questão:", error);
+        ui.showAlert('Houve um erro com a IA. Tente novamente.', 'danger');
+    } finally {
+        ui.hideFormLoader();
+    }
 }
 
 async function handleCreateQuestionSubmit(e) {
@@ -30,21 +47,21 @@ async function handleCreateQuestionSubmit(e) {
 }
 
 async function handleLogin(e) {
-  e.preventDefault();
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  try {
-    const user = await api.login(email, password);
-    state.setCurrentUser(user);
-    const questions = await api.fetchQuestions();
-    state.setQuestions(questions);
-    ui.updateNavbar(user);
-    ui.updateDashboardStats(questions);
-    ui.showSection('dashboard');
-    ui.showAlert(`Bem-vindo, ${user.name}!`);
-  } catch (err) {
-    ui.showAlert('Falha no login.', 'danger');
-  }
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    try {
+        const user = await api.login(email, password);
+        state.setCurrentUser(user);
+        const questions = await api.fetchQuestions();
+        state.setQuestions(questions);
+        ui.updateNavbar(user);
+        ui.updateDashboardStats(questions);
+        ui.showSection('dashboard');
+        ui.showAlert(`Bem-vindo, ${user.name}!`);
+    } catch (err) {
+        ui.showAlert('Falha no login.', 'danger');
+    }
 }
 
 async function handleLogout() {
@@ -79,7 +96,7 @@ async function handleDeleteQuestion(id) {
         await api.deleteQuestion(id);
         const questions = await api.fetchQuestions();
         state.setQuestions(questions);
-        
+
         // Atualiza a UI para refletir a exclusão
         ui.renderQuestions(questions);
         ui.updateDashboardStats(questions);
@@ -105,8 +122,8 @@ async function handleUploadFormSubmit(e) {
 // --- Função Principal de Inicialização de Eventos ---
 
 export const initialize = () => {
-  // Listener de cliques gerais para navegação e ações
-  // CÓDIGO CORRIGIDO E COMPLETO
+    // Listener de cliques gerais para navegação e ações
+    // CÓDIGO CORRIGIDO E COMPLETO
     document.addEventListener('click', (e) => {
         const navLink = e.target.closest('[data-section-id]');
         const actionButton = e.target.closest('[data-action]');
@@ -135,54 +152,54 @@ export const initialize = () => {
         }
     });
 
-  // Listeners específicos para cada formulário
-  const promptForm = document.getElementById('prompt-form');
-  if (promptForm) {
-    promptForm.addEventListener('submit', handlePromptFormSubmit);
-  }
+    // Listeners específicos para cada formulário
+    const promptForm = document.getElementById('prompt-form');
+    if (promptForm) {
+        promptForm.addEventListener('submit', handlePromptFormSubmit);
+    }
 
-  const createQuestionForm = document.getElementById('create-question-form');
-  if (createQuestionForm) {
-      createQuestionForm.addEventListener('submit', handleCreateQuestionSubmit);
-  }
+    const createQuestionForm = document.getElementById('create-question-form');
+    if (createQuestionForm) {
+        createQuestionForm.addEventListener('submit', handleCreateQuestionSubmit);
+    }
 
-  const loginForm = document.getElementById('login-form');
-  if (loginForm) {
-      loginForm.addEventListener('submit', handleLogin);
-  }
-  
-  const uploadForm = document.getElementById('upload-form');
-if(uploadForm) {
-    uploadForm.addEventListener('submit', handleUploadFormSubmit);
-}
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
 
-// Listeners específicos para a página de UPLOAD
-const pdfFileInput = document.getElementById('pdf-file-input');
-if (pdfFileInput) {
-    pdfFileInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
-}
+    const uploadForm = document.getElementById('upload-form');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', handleUploadFormSubmit);
+    }
 
-const uploadArea = document.getElementById('file-upload-area');
-if (uploadArea) {
-    // Previne o comportamento padrão do navegador para drag and drop
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, e => {
-            e.preventDefault();
-            e.stopPropagation();
+    // Listeners específicos para a página de UPLOAD
+    const pdfFileInput = document.getElementById('pdf-file-input');
+    if (pdfFileInput) {
+        pdfFileInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
+    }
+
+    const uploadArea = document.getElementById('file-upload-area');
+    if (uploadArea) {
+        // Previne o comportamento padrão do navegador para drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
         });
-    });
-    // Adiciona feedback visual ao arrastar
-    ['dragenter', 'dragover'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, () => ui.setUploadAreaDragState(true));
-    });
-    ['dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, () => ui.setUploadAreaDragState(false));
-    });
-    // Lida com o arquivo que foi solto na área
-    uploadArea.addEventListener('drop', (e) => {
-        const file = e.dataTransfer.files[0];
-        pdfFileInput.files = e.dataTransfer.files;
-        handleFileSelect(file);
-    });
-}
+        // Adiciona feedback visual ao arrastar
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => ui.setUploadAreaDragState(true));
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => ui.setUploadAreaDragState(false));
+        });
+        // Lida com o arquivo que foi solto na área
+        uploadArea.addEventListener('drop', (e) => {
+            const file = e.dataTransfer.files[0];
+            pdfFileInput.files = e.dataTransfer.files;
+            handleFileSelect(file);
+        });
+    }
 };
