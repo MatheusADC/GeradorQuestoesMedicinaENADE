@@ -118,14 +118,11 @@ def gerar_questao_endpoint():
     # Busca questões do banco como contexto
     contexto_questoes = buscar_questoes_contexto(especialidade, dificuldade)
 
-    # print("QUESTÕES DO BANCO: " + contexto_questoes)
-
     # Gera nova questão
     questao_gerada = gerar_questao_llm(contexto_questoes, especialidade, dificuldade, prompt)
-    
-    # return jsonify({"questao_gerada": questao_gerada})
 
     return jsonify(questao_gerada)
 
 if __name__ == "__main__":
+
     app.run(debug=True)
