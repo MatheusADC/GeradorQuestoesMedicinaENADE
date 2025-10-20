@@ -23,7 +23,7 @@ python server.py
 ### Instalação do LM Studio
 [Clique aqui](https://lmstudio.ai/)
 
-### Inicialização o servidor do LM Studio
+### Inicialização do servidor do LM Studio
 
 > [!WARNING]  
 > A opção fica no menu lateral, na aba **Developer**.
