@@ -1,3 +1,5 @@
+from os import path
+import os
 from flask import Flask, jsonify, request
 import sqlite3
 import requests
@@ -62,7 +64,8 @@ def gerar_questao_llm(contexto_questoes, especialidade, dificuldade, prompt):
         "model": "meta-llama-3.1-8b-instruct",
         "messages": [
             {"role": "system", "content": "Você é um gerador de questões do ENADE Medicina."},
-            {"role": "user", "content": f"Use os exemplos abaixo como referência para criar uma nova questão.\n\n{contexto_texto}\nCrie uma questão de {especialidade}, dificuldade {dificuldade}, sobre {prompt}. Dê 5 alternativas e indique a correta. Siga ESTRITAMENTE a seguinte forma para me dar a resposta e NÃO ESQUEÇA de usar como referência os exemplos que foram fornecidos:\nTítulo da Questão: ...\nEnunciado da Questão: ...\nAlternativas da Questão: A) ... B) ... C) ... D) ... E) ...\nAlternativa Correta: ..."}
+            {"role": "user", "content": f"Use os exemplos abaixo como referência para criar uma nova questão.\n\n{contexto_texto}\nCrie uma questão de {especialidade}, dificuldade {dificuldade}, sobre {prompt}. Dê 5 alternativas e indique a correta. Siga ESTRITAMENTE a seguinte forma para me dar a resposta e NÃO ESQUEÇA de usar como referência os exemplos que foram fornecidos:\nTítulo da Questão: ...\nEnunciado da Questão: ...\nAlternativas da Questão: A) ... B) ... C) ... D) ... E) ...\nAlternativa Correta: ...\nGabarito Comentado: Para cada alternativa, escreva um comentário conciso, claro, detalhado e explicativo, seguindo rigorosamente o formato:\nA) Correta/Errada: justificativa completa e objetiva\nB) Correta/Errada: justificativa completa e objetiva\nC) Correta/Errada: justificativa completa e objetiva\nD) Correta/Errada: justificativa completa e objetiva\nE) Correta/Errada: justificativa completa e objetiva\nSempre deixe as alternativas na ordem A, B, C, D, E, indicando explicitamente se cada uma está correta ou errada, explicando por que a correta está correta e por que as demais estão incorretas, de forma técnica, clara e direta."
+            }
         ]
     }
 
@@ -99,6 +102,10 @@ def gerar_questao_llm(contexto_questoes, especialidade, dificuldade, prompt):
     match = re.search(r'([A-E])', correct_raw)
     question_dict['correctAnswer'] = match.group(1) if match else ''
 
+    # Gabarito comentado completo
+    m = re.search(r'Gabarito Comentado:\s*(.*)', raw_content, re.DOTALL)
+    question_dict['explanation'] = m.group(1).strip() if m else ''
+
     question_dict['title'] = question_dict['title'].lstrip('* ').strip()
     question_dict['statement'] = question_dict['statement'].strip('* ').strip()
 
@@ -119,10 +126,16 @@ def gerar_questao_endpoint():
     contexto_questoes = buscar_questoes_contexto(especialidade, dificuldade)
 
     # Gera nova questão
-    questao_gerada = gerar_questao_llm(contexto_questoes, especialidade, dificuldade, prompt)
+    try:
+        questao_gerada = gerar_questao_llm(contexto_questoes, especialidade, dificuldade, prompt)
+    except RuntimeError as exc:
+        return jsonify({"error": str(exc)}), 502
+    except Exception as exc:
+        return jsonify({"error": f"Erro ao gerar questão: {exc}"}), 500
 
     return jsonify(questao_gerada)
 
 if __name__ == "__main__":
-
+    print(f"DB: {DB_PATH}")
+    print(f"LLM URL: {LM_SERVER_URL} | Modelo: {LM_MODEL}")
     app.run(debug=True)
