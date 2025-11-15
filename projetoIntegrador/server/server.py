@@ -1,5 +1,3 @@
-from os import path
-import os
 from flask import Flask, jsonify, request
 import sqlite3
 import requests
@@ -126,16 +124,9 @@ def gerar_questao_endpoint():
     contexto_questoes = buscar_questoes_contexto(especialidade, dificuldade)
 
     # Gera nova questão
-    try:
-        questao_gerada = gerar_questao_llm(contexto_questoes, especialidade, dificuldade, prompt)
-    except RuntimeError as exc:
-        return jsonify({"error": str(exc)}), 502
-    except Exception as exc:
-        return jsonify({"error": f"Erro ao gerar questão: {exc}"}), 500
+    questao_gerada = gerar_questao_llm(contexto_questoes, especialidade, dificuldade, prompt)
 
     return jsonify(questao_gerada)
 
 if __name__ == "__main__":
-    print(f"DB: {DB_PATH}")
-    print(f"LLM URL: {LM_SERVER_URL} | Modelo: {LM_MODEL}")
     app.run(debug=True)
