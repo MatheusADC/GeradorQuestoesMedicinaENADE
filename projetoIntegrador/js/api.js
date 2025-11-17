@@ -1,5 +1,5 @@
 // js/api.js
-import { getSampleQuestions } from './sample-data.js';
+import { getSampleQuestions } from "./sample-data.js";
 
 /**
  * Módulo responsável pela comunicação com a "fonte de dados".
@@ -7,7 +7,10 @@ import { getSampleQuestions } from './sample-data.js';
  * QUANDO O BACK-END ESTIVER PRONTO, ESTE É O ÚNICO ARQUIVO A SER MODIFICADO.
  */
 
-const QUESTIONS_KEY = 'medicalQuestions';
+const API_BASE_URL = "http://localhost:5000";
+const QUESTIONS_KEY = "medicalQuestions";
+const CURRENT_USER_KEY = "currentUser";
+const AUTH_TOKEN_KEY = "authToken";
 
 // Carrega as questões do localStorage ou usa os dados de exemplo
 const loadInitialQuestions = () => {
@@ -26,6 +29,38 @@ const persistQuestions = () => {
   localStorage.setItem(QUESTIONS_KEY, JSON.stringify(questions));
 };
 
+const handleJsonResponse = async (response) => {
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (err) {
+    // Mantém data vazio quando não há corpo
+  }
+
+  if (!response.ok) {
+    const message = data?.message || "Erro inesperado ao falar com o servidor.";
+    throw new Error(message);
+  }
+
+  return data;
+};
+
+const persistSession = (user, token) => {
+  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
+};
+
+const buildHeaders = (includeToken = false) => {
+  const headers = { "Content-Type": "application/json" };
+  if (includeToken) {
+    const token = getAuthToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return headers;
+};
+
 // --- Funções Públicas da API ---
 
 export const fetchQuestions = () => {
@@ -35,7 +70,7 @@ export const fetchQuestions = () => {
 
 export const saveQuestion = (questionData) => {
   // Lógica para criar ou atualizar uma questão
-  const existingIndex = questions.findIndex(q => q.id === questionData.id);
+  const existingIndex = questions.findIndex((q) => q.id === questionData.id);
   if (existingIndex > -1) {
     questions[existingIndex] = { ...questions[existingIndex], ...questionData };
   } else {
@@ -48,60 +83,85 @@ export const saveQuestion = (questionData) => {
 };
 
 export const deleteQuestion = (questionId) => {
-  questions = questions.filter(q => q.id !== questionId);
+  questions = questions.filter((q) => q.id !== questionId);
   persistQuestions();
   return Promise.resolve({ success: true });
 };
 
 export const approveQuestion = (questionId) => {
-  const question = questions.find(q => q.id === questionId);
+  const question = questions.find((q) => q.id === questionId);
   if (question) {
-    question.status = 'approved';
+    question.status = "approved";
     persistQuestions();
   }
   return Promise.resolve(question);
 };
 
-// Funções de login/registro simuladas
-export const login = (email, password) => {
-  console.log('Simulando login para:', email, password);
-  const demoUser = {
-    id: 1,
-    name: 'Dr. João Silva',
-    email: email,
-  };
-  localStorage.setItem('currentUser', JSON.stringify(demoUser));
-  return Promise.resolve(demoUser);
+export const login = async (email, password) => {
+  const response = await fetch(`${API_BASE_URL}/login`, {
+    method: "POST",
+    headers: buildHeaders(),
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await handleJsonResponse(response);
+  persistSession(data.user, data.token);
+  return data.user;
 };
 
-export const register = (userData) => {
-  console.log('Simulando registro para:', userData);
-  const newUser = {
-    id: Date.now(),
-    name: userData.name,
-    email: userData.email,
-  };
-  localStorage.setItem('currentUser', JSON.stringify(newUser));
-  return Promise.resolve(newUser);
+export const register = async ({ name, email, password }) => {
+  const response = await fetch(`${API_BASE_URL}/register`, {
+    method: "POST",
+    headers: buildHeaders(),
+    body: JSON.stringify({ name, email, password }),
+  });
+
+  const data = await handleJsonResponse(response);
+  persistSession(data.user, data.token);
+  return data.user;
 };
 
 export const logout = () => {
-    localStorage.removeItem('currentUser');
-    return Promise.resolve();
+  localStorage.removeItem(CURRENT_USER_KEY);
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  return Promise.resolve();
 };
 
 export const getLoggedInUser = () => {
-    return JSON.parse(localStorage.getItem('currentUser'));
-}
+  const serialized = localStorage.getItem(CURRENT_USER_KEY);
+  return serialized ? JSON.parse(serialized) : null;
+};
+
+export const getAuthToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
+
+export const restoreSession = async () => {
+  const token = getAuthToken();
+  if (!token) {
+    return getLoggedInUser();
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/me`, {
+      method: "GET",
+      headers: buildHeaders(true),
+    });
+    const data = await handleJsonResponse(response);
+    persistSession(data.user, token);
+    return data.user;
+  } catch (error) {
+    await logout();
+    return null;
+  }
+};
 
 export const generateQuestionFromPrompt = (promptData) => {
-  console.log('Enviando para a IA:', promptData);
+  console.log("Enviando para a IA:", promptData);
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     // Simula um delay de 2.5 segundos do back-end processando
     setTimeout(() => {
-      console.log('IA retornou uma resposta.');
-      
+      console.log("IA retornou uma resposta.");
+
       // Objeto de exemplo que a IA retornaria
       const generatedQuestion = {
         title: `Questão sobre ${promptData.subjectArea}`,
@@ -111,18 +171,19 @@ export const generateQuestionFromPrompt = (promptData) => {
           B: "Alternativa B gerada pela IA.",
           C: "Alternativa C gerada pela IA.",
           D: "Alternativa D gerada pela IA.",
-          E: ""
+          E: "",
         },
         correctAnswer: "A",
-        explanation: "Esta explicação foi gerada automaticamente pela IA com base no prompt fornecido.",
+        explanation:
+          "Esta explicação foi gerada automaticamente pela IA com base no prompt fornecido.",
         difficultyLevel: promptData.difficultyLevel,
         subjectArea: promptData.subjectArea,
-        status: 'draft', 
-        sourceType: 'ia-generated',
+        status: "draft",
+        sourceType: "ia-generated",
       };
-      
+
       // Resolve a Promise, entregando a questão gerada
       resolve(generatedQuestion);
-    }, 2500); 
+    }, 2500);
   });
 };
