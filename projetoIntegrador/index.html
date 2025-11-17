@@ -1,452 +1,656 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IAQuestMed - Sistema de Questões Médicas</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
 
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
-                <a class="navbar-brand" href="#" data-section-id="home">
-                    <i class="fas fa-stethoscope me-2"></i>
-                    IAQuestMed
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+          <a class="navbar-brand" href="#" data-section-id="home">
+            <i class="fas fa-stethoscope me-2"></i>
+            IAQuestMed
+          </a>
+
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul
+              class="navbar-nav me-auto nav-links-hidden"
+              id="main-nav-links"
+              aria-hidden="true"
+              inert
+            >
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section-id="home">Início</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section-id="dashboard"
+                  >Dashboard</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section-id="upload"
+                  >Upload PDF</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section-id="questions"
+                  >Questões</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section-id="create"
+                  >Criar Questão</a
+                >
+              </li>
+            </ul>
+
+            <ul class="navbar-nav" id="auth-links">
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section-id="register">
+                  <i class="fas fa-user-plus me-1"></i>Cadastrar
                 </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-section-id="login">
+                  <i class="fas fa-sign-in-alt me-1"></i>Login
+                </a>
+              </li>
+            </ul>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section-id="home">Início</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section-id="dashboard">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section-id="upload">Upload PDF</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section-id="questions">Questões</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section-id="create">Criar Questão</a>
-                        </li>
-                    </ul>
-
-                    <ul class="navbar-nav" id="auth-links">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section-id="register">
-                                <i class="fas fa-user-plus me-1"></i>Cadastrar
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section-id="login">
-                                <i class="fas fa-sign-in-alt me-1"></i>Login
-                            </a>
-                        </li>
-                    </ul>
-
-                    <ul class="navbar-nav hidden" id="user-menu"></ul>
-                </div>
-            </div>
-        </nav>
+            <ul class="navbar-nav hidden" id="user-menu"></ul>
+          </div>
+        </div>
+      </nav>
     </header>
 
     <main>
-        <section id="home" class="section-content">
-            <div class="hero-section">
-                <div class="container">
-                    <h1 class="display-4 fw-bold mb-4">
-                        Crie Questões para Medicina com a IAQuestMed
-                    </h1>
-                    <p class="lead mb-5">
-                        A plataforma inteligente para criar, extrair e gerenciar questões médicas alinhadas ao padrão
-                        ENADE, feita para apoiar seu desenvolvimento profissional.
-                    </p>
-                    <button class="btn btn-light btn-lg" data-section-id="register">
-                        <i class="fas fa-user-plus me-2"></i>Começar Agora
-                    </button>
+      <section id="home" class="section-content">
+        <div class="hero-section">
+          <div class="container">
+            <h1 class="display-4 fw-bold mb-4">
+              Crie Questões para Medicina com a IAQuestMed
+            </h1>
+            <p class="lead mb-5">
+              A plataforma inteligente para criar, extrair e gerenciar questões
+              médicas alinhadas ao padrão ENADE, feita para apoiar seu
+              desenvolvimento profissional.
+            </p>
+            <button class="btn btn-light btn-lg" data-section-id="register">
+              <i class="fas fa-user-plus me-2"></i>Começar Agora
+            </button>
+          </div>
+        </div>
+
+        <div class="container py-5">
+          <div class="row text-center">
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 border-0">
+                <div class="card-body">
+                  <i class="fas fa-file-pdf feature-card__icon"></i>
+                  <h5 class="card-title">Extração Inteligente</h5>
+                  <p class="card-text">
+                    Extraia questões automaticamente de PDFs usando tecnologia
+                    de IA avançada
+                  </p>
                 </div>
+              </div>
             </div>
 
-            <div class="container py-5">
-                <div class="row text-center">
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 border-0">
-                            <div class="card-body">
-                                <i class="fas fa-file-pdf feature-card__icon"></i>
-                                <h5 class="card-title">Extração Inteligente</h5>
-                                <p class="card-text">
-                                    Extraia questões automaticamente de PDFs usando tecnologia de IA avançada
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 border-0">
-                            <div class="card-body">
-                                <i class="fas fa-user-md feature-card__icon"></i>
-                                <h5 class="card-title">Validação CRM</h5>
-                                <p class="card-text">
-                                    Sistema seguro com validação de registro médico para garantir autenticidade
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 border-0">
-                            <div class="card-body">
-                                <i class="fas fa-brain feature-card__icon"></i>
-                                <h5 class="card-title">IA para Treinamento</h5>
-                                <p class="card-text">
-                                    IA aprende a cada questão criada, enviada ou corrigida, melhorando continuamente
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 border-0">
+                <div class="card-body">
+                  <i class="fas fa-user-md feature-card__icon"></i>
+                  <h5 class="card-title">Validação CRM</h5>
+                  <p class="card-text">
+                    Sistema seguro com validação de registro médico para
+                    garantir autenticidade
+                  </p>
                 </div>
+              </div>
             </div>
-        </section>
 
-        <section id="dashboard" class="section-content hidden">
-            <div class="container py-5">
-                <h2><i class="fas fa-chart-bar me-2"></i>Dashboard</h2>
-                <p class="text-muted">Acompanhe a situação das suas questões</p>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 border-0">
+                <div class="card-body">
+                  <i class="fas fa-brain feature-card__icon"></i>
+                  <h5 class="card-title">IA para Treinamento</h5>
+                  <p class="card-text">
+                    IA aprende a cada questão criada, enviada ou corrigida,
+                    melhorando continuamente
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                <div class="row mb-5">
-                    <div class="col-md-3 mb-3">
-                        <div class="card stats-card">
-                            <div class="card-body text-center">
-                                <i class="fas fa-question-circle fa-2x mb-3"></i>
-                                <h3 class="card-title" id="totalQuestions">0</h3>
-                                <p class="card-text">Total de Questões</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card bg-success text-white">
-                            <div class="card-body text-center">
-                                <i class="fas fa-check-circle fa-2x mb-3"></i>
-                                <h3 class="card-title" id="approvedQuestions">0</h3>
-                                <p class="card-text">Aprovadas</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card bg-warning text-white">
-                            <div class="card-body text-center">
-                                <i class="fas fa-clock fa-2x mb-3"></i>
-                                <h3 class="card-title" id="pendingQuestions">0</h3>
-                                <p class="card-text">Pendentes</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card bg-secondary text-white">
-                            <div class="card-body text-center">
-                                <i class="fas fa-edit fa-2x mb-3"></i>
-                                <h3 class="card-title" id="draftQuestions">0</h3>
-                                <p class="card-text">Rascunhos</p>
-                            </div>
-                        </div>
-                    </div>
+      <section id="dashboard" class="section-content hidden">
+        <div class="container py-5">
+          <h2><i class="fas fa-chart-bar me-2"></i>Dashboard</h2>
+          <p class="text-muted">Acompanhe a situação das suas questões</p>
+
+          <div class="row mb-5">
+            <div class="col-md-3 mb-3">
+              <div class="card stats-card">
+                <div class="card-body text-center">
+                  <i class="fas fa-question-circle fa-2x mb-3"></i>
+                  <h3 class="card-title" id="totalQuestions">0</h3>
+                  <p class="card-text">Total de Questões</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                  <i class="fas fa-check-circle fa-2x mb-3"></i>
+                  <h3 class="card-title" id="approvedQuestions">0</h3>
+                  <p class="card-text">Aprovadas</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                  <i class="fas fa-clock fa-2x mb-3"></i>
+                  <h3 class="card-title" id="pendingQuestions">0</h3>
+                  <p class="card-text">Pendentes</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card bg-secondary text-white">
+                <div class="card-body text-center">
+                  <i class="fas fa-edit fa-2x mb-3"></i>
+                  <h3 class="card-title" id="draftQuestions">0</h3>
+                  <p class="card-text">Rascunhos</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header">
+                  <h5><i class="fas fa-history me-2"></i>Atividade Recente</h5>
+                </div>
+                <div class="card-body">
+                  <div
+                    class="list-group list-group-flush"
+                    id="recentActivity"
+                  ></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5>
+                    <i class="fas fa-chart-pie me-2"></i>Por Especialidade
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <canvas id="specialtyChart" width="400" height="300"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="upload" class="section-content hidden">
+        <div class="container py-5">
+          <div class="card">
+            <div class="card-header text-center">
+              <h3><i class="fas fa-upload me-2"></i>Upload de PDF</h3>
+              <p class="mb-0 text-muted">
+                Faça upload de provas para extrair questões automaticamente
+              </p>
+            </div>
+            <div class="card-body">
+              <form id="upload-form">
+                <div class="file-upload-area" id="file-upload-area">
+                  <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
+                  <h5>Arraste e solte seu arquivo PDF aqui</h5>
+                  <p class="text-muted">ou clique para selecionar um arquivo</p>
+                  <input
+                    type="file"
+                    id="pdf-file-input"
+                    class="d-none"
+                    accept=".pdf"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="select-file-btn"
+                  >
+                    <i class="fas fa-folder-open me-2"></i>Selecionar Arquivo
+                  </button>
                 </div>
 
-                <div class="row">
+                <div id="file-preview" class="mt-3 hidden"></div>
+
+                <div class="text-center mt-4">
+                  <button
+                    type="submit"
+                    class="btn btn-success btn-lg"
+                    disabled
+                    id="upload-btn"
+                  >
+                    <i class="fas fa-cogs me-2"></i>Processar PDF
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="questions" class="section-content hidden">
+        <div class="container py-5">
+          <div class="row mb-4 align-items-center">
+            <div class="col-md-6">
+              <h2>
+                <i class="fas fa-question-circle me-2"></i>Minhas Questões
+              </h2>
+            </div>
+            <div class="col-md-6 text-end">
+              <div class="btn-group" role="group" id="question-filters">
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="statusFilter"
+                  id="all"
+                  value="all"
+                  autocomplete="off"
+                  checked
+                />
+                <label class="btn btn-outline-primary" for="all">Todas</label>
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="statusFilter"
+                  id="approved"
+                  value="approved"
+                  autocomplete="off"
+                />
+                <label class="btn btn-outline-success" for="approved"
+                  >Aprovadas</label
+                >
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="statusFilter"
+                  id="pending"
+                  value="pending"
+                  autocomplete="off"
+                />
+                <label class="btn btn-outline-warning" for="pending"
+                  >Pendentes</label
+                >
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="statusFilter"
+                  id="draft"
+                  value="draft"
+                  autocomplete="off"
+                />
+                <label class="btn btn-outline-secondary" for="draft"
+                  >Rascunhos</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div id="questions-list"></div>
+
+          <nav class="mt-4">
+            <ul class="pagination justify-content-center" id="pagination"></ul>
+          </nav>
+        </div>
+      </section>
+
+      <section id="create" class="section-content hidden">
+        <div class="container py-5">
+          <div class="card" id="prompt-container">
+            <div class="card-header">
+              <h3><i class="fas fa-magic me-2"></i>Gerar Questão com IA</h3>
+            </div>
+            <div class="card-body">
+              <form id="prompt-form">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="subjectArea" class="form-label"
+                      >Área de Especialidade</label
+                    >
+                    <select class="form-select" id="subjectArea">
+                      <option value="Medicina Geral">Medicina Geral</option>
+                      <option value="Cardiologia">Cardiologia</option>
+                      <option value="Neurologia">Neurologia</option>
+                      <option value="Pediatria">Pediatria</option>
+                      <option value="Ginecologia">Ginecologia</option>
+                      <option value="Saúde Coletiva">Saúde Coletiva</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="difficultyLevel" class="form-label"
+                      >Nível de Dificuldade</label
+                    >
+                    <select class="form-select" id="difficultyLevel">
+                      <option value="easy">Fácil</option>
+                      <option value="medium" selected>Médio</option>
+                      <option value="hard">Difícil</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="questionPrompt" class="form-label"
+                    >Descreva a questão que você deseja:*</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="questionPrompt"
+                    rows="4"
+                    placeholder="Ex: Crie uma questão de múltipla escolha sobre o tratamento inicial de infarto agudo do miocárdio com supra de ST."
+                    required
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100"
+                  id="generate-question-btn"
+                >
+                  <span
+                    class="spinner-border spinner-border-sm me-2 hidden"
+                    id="generate-spinner"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  <i class="fas fa-cogs me-2" id="generate-button-icon"></i>
+                  <span id="generate-button-text">Gerar Questão</span>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card mt-4 hidden" id="form-container">
+            <div class="card-header">
+              <h3>
+                <i class="fas fa-edit me-2"></i>Validar e Salvar Questão Gerada
+              </h3>
+            </div>
+            <div class="card-body position-relative">
+              <div class="loading-overlay hidden" id="form-loader">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Gerando questão...</span>
+                </div>
+                <p class="text-light mt-2">Aguarde, a IA está trabalhando...</p>
+              </div>
+
+              <form id="create-question-form">
+                <fieldset id="form-fieldset">
+                  <input type="hidden" id="editing-question-id" />
+                  <input type="hidden" id="questionSubjectArea" />
+                  <input type="hidden" id="questionDifficulty" />
+                  <input type="hidden" id="questionSourceType" value="manual" />
+                  <input type="hidden" id="questionStatus" value="draft" />
+
+                  <div class="mb-3">
+                    <label for="questionTitle" class="form-label"
+                      >Título da Questão *</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="questionTitle"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="questionStatement" class="form-label"
+                      >Enunciado da Questão *</label
+                    >
+                    <textarea
+                      class="form-control"
+                      id="questionStatement"
+                      rows="4"
+                      required
+                    ></textarea>
+                  </div>
+                  <div class="row mb-3">
                     <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-history me-2"></i>Atividade Recente</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="list-group list-group-flush" id="recentActivity"></div>
-                            </div>
-                        </div>
+                      <label class="form-label">Alternativas *</label>
+                      <div class="input-group mb-2">
+                        <span class="input-group-text">A)</span
+                        ><input
+                          type="text"
+                          class="form-control"
+                          name="alternative"
+                          id="alternativeA"
+                          required
+                        />
+                      </div>
+                      <div class="input-group mb-2">
+                        <span class="input-group-text">B)</span
+                        ><input
+                          type="text"
+                          class="form-control"
+                          name="alternative"
+                          id="alternativeB"
+                          required
+                        />
+                      </div>
+                      <div class="input-group mb-2">
+                        <span class="input-group-text">C)</span
+                        ><input
+                          type="text"
+                          class="form-control"
+                          name="alternative"
+                          id="alternativeC"
+                          required
+                        />
+                      </div>
+                      <div class="input-group mb-2">
+                        <span class="input-group-text">D)</span
+                        ><input
+                          type="text"
+                          class="form-control"
+                          name="alternative"
+                          id="alternativeD"
+                        />
+                      </div>
+                      <div class="input-group mb-2">
+                        <span class="input-group-text">E)</span
+                        ><input
+                          type="text"
+                          class="form-control"
+                          name="alternative"
+                          id="alternativeE"
+                        />
+                      </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-chart-pie me-2"></i>Por Especialidade</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="specialtyChart" width="400" height="300"></canvas>
-                            </div>
-                        </div>
+                      <label for="correctAnswer" class="form-label"
+                        >Resposta Correta *</label
+                      >
+                      <select class="form-select" id="correctAnswer" required>
+                        <option value="">Selecione...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                      </select>
                     </div>
-                </div>
+                  </div>
+                  <div class="mb-4">
+                    <label for="explanation" class="form-label"
+                      >Gabarito Comentado</label
+                    >
+                    <textarea
+                      class="form-control"
+                      id="explanation"
+                      rows="3"
+                    ></textarea>
+                  </div>
+                  <div class="text-center">
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary me-2"
+                      id="preview-question-btn"
+                    >
+                      <i class="fas fa-eye me-2"></i>Visualizar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                      <i class="fas fa-save me-2"></i>Salvar Questão
+                    </button>
+                  </div>
+                </fieldset>
+              </form>
             </div>
-        </section>
+          </div>
+        </div>
+      </section>
 
-        <section id="upload" class="section-content hidden">
-            <div class="container py-5">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <h3><i class="fas fa-upload me-2"></i>Upload de PDF</h3>
-                        <p class="mb-0 text-muted">Faça upload de provas para extrair questões automaticamente</p>
-                    </div>
-                    <div class="card-body">
-                        <form id="upload-form">
-                            <div class="file-upload-area" id="file-upload-area">
-                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
-                                <h5>Arraste e solte seu arquivo PDF aqui</h5>
-                                <p class="text-muted">ou clique para selecionar um arquivo</p>
-                                <input type="file" id="pdf-file-input" class="d-none" accept=".pdf">
-                                <button type="button" class="btn btn-primary" id="select-file-btn">
-                                    <i class="fas fa-folder-open me-2"></i>Selecionar Arquivo
-                                </button>
-                            </div>
-
-                            <div id="file-preview" class="mt-3 hidden"></div>
-
-                            <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-success btn-lg" disabled id="upload-btn">
-                                    <i class="fas fa-cogs me-2"></i>Processar PDF
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+      <section id="register" class="section-content hidden">
+        <div class="container py-5 justify-content-center row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header text-center">
+                <h3><i class="fas fa-user-plus me-2"></i>Cadastro de Médico</h3>
+              </div>
+              <div class="card-body">
+                <form id="register-form">
+                  <div class="mb-3">
+                    <label for="doctorName" class="form-label"
+                      >Nome Completo *</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="doctorName"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="doctorEmail" class="form-label">Email *</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="doctorEmail"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="registerPassword" class="form-label"
+                      >Senha *</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="registerPassword"
+                      minlength="6"
+                      required
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-user-plus me-2"></i>Criar Conta
+                  </button>
+                </form>
+                <div class="text-center mt-3">
+                  <p>
+                    Já possui conta?
+                    <a href="#" data-section-id="login">Fazer login</a>
+                  </p>
                 </div>
+              </div>
             </div>
-        </section>
+          </div>
+        </div>
+      </section>
 
-        <section id="questions" class="section-content hidden">
-            <div class="container py-5">
-                <div class="row mb-4 align-items-center">
-                    <div class="col-md-6">
-                        <h2><i class="fas fa-question-circle me-2"></i>Minhas Questões</h2>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <div class="btn-group" role="group" id="question-filters">
-                            <input type="radio" class="btn-check" name="statusFilter" id="all" value="all"
-                                autocomplete="off" checked>
-                            <label class="btn btn-outline-primary" for="all">Todas</label>
-
-                            <input type="radio" class="btn-check" name="statusFilter" id="approved" value="approved"
-                                autocomplete="off">
-                            <label class="btn btn-outline-success" for="approved">Aprovadas</label>
-
-                            <input type="radio" class="btn-check" name="statusFilter" id="pending" value="pending"
-                                autocomplete="off">
-                            <label class="btn btn-outline-warning" for="pending">Pendentes</label>
-
-                            <input type="radio" class="btn-check" name="statusFilter" id="draft" value="draft"
-                                autocomplete="off">
-                            <label class="btn btn-outline-secondary" for="draft">Rascunhos</label>
-                        </div>
-                    </div>
+      <section id="login" class="section-content hidden">
+        <div class="container py-5 justify-content-center row">
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header text-center">
+                <h3><i class="fas fa-sign-in-alt me-2"></i>Login</h3>
+              </div>
+              <div class="card-body">
+                <form id="login-form">
+                  <div class="mb-3">
+                    <label for="loginEmail" class="form-label">Email</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="loginEmail"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="loginPassword" class="form-label">Senha</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="loginPassword"
+                      required
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-sign-in-alt me-2"></i>Entrar
+                  </button>
+                </form>
+                <div class="text-center mt-3">
+                  <p>
+                    Não possui conta?
+                    <a href="#" data-section-id="register">Cadastrar-se</a>
+                  </p>
                 </div>
-
-                <div id="questions-list"></div>
-
-                <nav class="mt-4">
-                    <ul class="pagination justify-content-center" id="pagination"></ul>
-                </nav>
+              </div>
             </div>
-        </section>
-
-        <section id="create" class="section-content hidden">
-            <div class="container py-5">
-
-                <div class="card" id="prompt-container">
-                    <div class="card-header">
-                        <h3><i class="fas fa-magic me-2"></i>Gerar Questão com IA</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="prompt-form">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="subjectArea" class="form-label">Área de Especialidade</label>
-                                    <select class="form-select" id="subjectArea">
-                                        <option value="Medicina Geral">Medicina Geral</option>
-                                        <option value="Cardiologia">Cardiologia</option>
-                                        <option value="Neurologia">Neurologia</option>
-                                        <option value="Pediatria">Pediatria</option>
-                                        <option value="Ginecologia">Ginecologia</option>
-                                        <option value="Saúde Coletiva">Saúde Coletiva</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="difficultyLevel" class="form-label">Nível de Dificuldade</label>
-                                    <select class="form-select" id="difficultyLevel">
-                                        <option value="easy">Fácil</option>
-                                        <option value="medium" selected>Médio</option>
-                                        <option value="hard">Difícil</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="questionPrompt" class="form-label">Descreva a questão que você
-                                    deseja:*</label>
-                                <textarea class="form-control" id="questionPrompt" rows="4"
-                                    placeholder="Ex: Crie uma questão de múltipla escolha sobre o tratamento inicial de infarto agudo do miocárdio com supra de ST."
-                                    required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-cogs me-2"></i>Gerar Questão
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="card mt-4 hidden" id="form-container">
-                    <div class="card-header">
-                        <h3><i class="fas fa-edit me-2"></i>Validar e Salvar Questão Gerada</h3>
-                    </div>
-                    <div class="card-body position-relative">
-
-                        <div class="loading-overlay hidden" id="form-loader">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Gerando questão...</span>
-                            </div>
-                            <p class="text-light mt-2">Aguarde, a IA está trabalhando...</p>
-                        </div>
-
-                        <form id="create-question-form">
-                            <fieldset id="form-fieldset">
-                                <input type="hidden" id="editing-question-id">
-
-                                <div class="mb-3">
-                                    <label for="questionTitle" class="form-label">Título da Questão *</label>
-                                    <input type="text" class="form-control" id="questionTitle" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="questionStatement" class="form-label">Enunciado da Questão *</label>
-                                    <textarea class="form-control" id="questionStatement" rows="4" required></textarea>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-8">
-                                        <label class="form-label">Alternativas *</label>
-                                        <div class="input-group mb-2"><span class="input-group-text">A)</span><input
-                                                type="text" class="form-control" name="alternative" id="alternativeA"
-                                                required></div>
-                                        <div class="input-group mb-2"><span class="input-group-text">B)</span><input
-                                                type="text" class="form-control" name="alternative" id="alternativeB"
-                                                required></div>
-                                        <div class="input-group mb-2"><span class="input-group-text">C)</span><input
-                                                type="text" class="form-control" name="alternative" id="alternativeC"
-                                                required></div>
-                                        <div class="input-group mb-2"><span class="input-group-text">D)</span><input
-                                                type="text" class="form-control" name="alternative" id="alternativeD">
-                                        </div>
-                                        <div class="input-group mb-2"><span class="input-group-text">E)</span><input
-                                                type="text" class="form-control" name="alternative" id="alternativeE">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="correctAnswer" class="form-label">Resposta Correta *</label>
-                                        <select class="form-select" id="correctAnswer" required>
-                                            <option value="">Selecione...</option>
-                                            <option value="A">A</option>
-                                            <option value="B">B</option>
-                                            <option value="C">C</option>
-                                            <option value="D">D</option>
-                                            <option value="E">E</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <label for="explanation" class="form-label">Explicação/Comentário</label>
-                                    <textarea class="form-control" id="explanation" rows="3"></textarea>
-                                </div>
-                                <div class="text-center">
-                                    <button type="button" class="btn btn-outline-primary me-2"
-                                        id="preview-question-btn">
-                                        <i class="fas fa-eye me-2"></i>Visualizar
-                                    </button>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-save me-2"></i>Salvar Questão
-                                    </button>
-                                </div>
-                            </fieldset>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="register" class="section-content hidden">
-            <div class="container py-5 justify-content-center row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header text-center">
-                            <h3><i class="fas fa-user-plus me-2"></i>Cadastro de Médico</h3>
-                        </div>
-                        <div class="card-body">
-                            <form id="register-form">
-                                <div class="mb-3">
-                                    <label for="doctorName" class="form-label">Nome Completo *</label>
-                                    <input type="text" class="form-control" id="doctorName" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="doctorEmail" class="form-label">Email *</label>
-                                    <input type="email" class="form-control" id="doctorEmail" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-user-plus me-2"></i>Criar Conta
-                                </button>
-                            </form>
-                            <div class="text-center mt-3">
-                                <p>Já possui conta? <a href="#" data-section-id="login">Fazer login</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="login" class="section-content hidden">
-            <div class="container py-5 justify-content-center row">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header text-center">
-                            <h3><i class="fas fa-sign-in-alt me-2"></i>Login</h3>
-                        </div>
-                        <div class="card-body">
-                            <form id="login-form">
-                                <div class="mb-3">
-                                    <label for="loginEmail" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="loginEmail" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="loginPassword" class="form-label">Senha</label>
-                                    <input type="password" class="form-control" id="loginPassword" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Entrar
-                                </button>
-                            </form>
-                            <div class="text-center mt-3">
-                                <p>Não possui conta? <a href="#" data-section-id="register">Cadastrar-se</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
-        <div class="container text-center">
-            <p class="text-muted mb-0">© 2025 IAQuestMed - Todos os direitos reservados</p>
-        </div>
+      <div class="container text-center">
+        <p class="text-muted mb-0">
+          © 2025 IAQuestMed - Todos os direitos reservados
+        </p>
+      </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script type="module" src="js/main.js"></script>
-</body>
-
+  </body>
 </html>

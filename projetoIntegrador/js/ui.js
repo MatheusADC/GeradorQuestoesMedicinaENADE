@@ -9,57 +9,103 @@
 // Mapeamento de IDs para elementos do DOM para evitar repetição
 const elements = {
   // Seções
-  sections: document.querySelectorAll('.section-content'),
+  sections: document.querySelectorAll(".section-content"),
   // Navbar
-  authLinks: document.getElementById('auth-links'),
-  userMenu: document.getElementById('user-menu'),
+  authLinks: document.getElementById("auth-links"),
+  userMenu: document.getElementById("user-menu"),
+  mainNavLinks: document.getElementById("main-nav-links"),
   // Dashboard
-  totalQuestions: document.getElementById('totalQuestions'),
-  approvedQuestions: document.getElementById('approvedQuestions'),
-  pendingQuestions: document.getElementById('pendingQuestions'),
-  draftQuestions: document.getElementById('draftQuestions'),
-  recentActivity: document.getElementById('recentActivity'),
+  totalQuestions: document.getElementById("totalQuestions"),
+  approvedQuestions: document.getElementById("approvedQuestions"),
+  pendingQuestions: document.getElementById("pendingQuestions"),
+  draftQuestions: document.getElementById("draftQuestions"),
+  recentActivity: document.getElementById("recentActivity"),
   // Lista de Questões
-  questionsList: document.getElementById('questions-list'),
-  pagination: document.getElementById('pagination'),
+  questionsList: document.getElementById("questions-list"),
+  pagination: document.getElementById("pagination"),
   // Formulário de Criação/Edição
-  createQuestionForm: document.getElementById('create-question-form'),
-  editingQuestionId: document.getElementById('editing-question-id'),
-  questionTitle: document.getElementById('questionTitle'),
-  questionStatement: document.getElementById('questionStatement'),
-  promptForm: document.getElementById('prompt-form'),
-  formContainer: document.getElementById('form-container'),
-  formLoader: document.getElementById('form-loader'),
-  formFieldset: document.getElementById('form-fieldset'),
-  createQuestionForm: document.getElementById('create-question-form'), 
-  correctAnswer: document.getElementById('correctAnswer'), 
-  explanation: document.getElementById('explanation'),
+  createQuestionForm: document.getElementById("create-question-form"),
+  editingQuestionId: document.getElementById("editing-question-id"),
+  questionTitle: document.getElementById("questionTitle"),
+  questionStatement: document.getElementById("questionStatement"),
+  questionSubjectArea: document.getElementById("questionSubjectArea"),
+  questionDifficulty: document.getElementById("questionDifficulty"),
+  questionSourceType: document.getElementById("questionSourceType"),
+  questionStatus: document.getElementById("questionStatus"),
+  promptForm: document.getElementById("prompt-form"),
+  generateQuestionBtn: document.getElementById("generate-question-btn"),
+  generateSpinner: document.getElementById("generate-spinner"),
+  generateButtonIcon: document.getElementById("generate-button-icon"),
+  generateButtonText: document.getElementById("generate-button-text"),
+  formContainer: document.getElementById("form-container"),
+  formLoader: document.getElementById("form-loader"),
+  formFieldset: document.getElementById("form-fieldset"),
+  correctAnswer: document.getElementById("correctAnswer"),
+  explanation: document.getElementById("explanation"),
   alternatives: {
-        A: document.getElementById('alternativeA'),
-        B: document.getElementById('alternativeB'),
-        C: document.getElementById('alternativeC'),
-        D: document.getElementById('alternativeD'),
-        E: document.getElementById('alternativeE'),
+    A: document.getElementById("alternativeA"),
+    B: document.getElementById("alternativeB"),
+    C: document.getElementById("alternativeC"),
+    D: document.getElementById("alternativeD"),
+    E: document.getElementById("alternativeE"),
+  },
+};
+
+const setMainNavVisibility = (isVisible) => {
+  const navLinks = elements.mainNavLinks;
+  if (!navLinks) return;
+
+  navLinks.classList.toggle("nav-links-hidden", !isVisible);
+  navLinks.setAttribute("aria-hidden", String(!isVisible));
+
+  if (!isVisible) {
+    navLinks.setAttribute("inert", "");
+  } else {
+    navLinks.removeAttribute("inert");
   }
 };
 
 // --- Funções de Renderização ---
 
 export const showSection = (sectionId) => {
-  elements.sections.forEach(section => {
-    section.classList.toggle('hidden', section.id !== sectionId);
+  elements.sections.forEach((section) => {
+    section.classList.toggle("hidden", section.id !== sectionId);
   });
 };
 
+export const setPromptLoading = (isLoading) => {
+  const {
+    generateQuestionBtn,
+    generateSpinner,
+    generateButtonIcon,
+    generateButtonText,
+  } = elements;
+
+  if (!generateQuestionBtn) return;
+
+  generateQuestionBtn.disabled = isLoading;
+  if (generateSpinner) {
+    generateSpinner.classList.toggle("hidden", !isLoading);
+  }
+  if (generateButtonIcon) {
+    generateButtonIcon.classList.toggle("hidden", isLoading);
+  }
+  if (generateButtonText) {
+    generateButtonText.textContent = isLoading
+      ? "Gerando questão..."
+      : "Gerar Questão";
+  }
+};
+
 const getStatusBadge = (status) => {
-    const map = {
-        approved: { text: 'Aprovada', color: 'success' },
-        pending: { text: 'Pendente', color: 'warning' },
-        draft: { text: 'Rascunho', color: 'secondary' },
-    };
-    const { text, color } = map[status] || { text: status, color: 'dark' };
-    return `<span class="badge bg-${color}">${text}</span>`;
-}
+  const map = {
+    approved: { text: "Aprovada", color: "success" },
+    pending: { text: "Pendente", color: "warning" },
+    draft: { text: "Rascunho", color: "secondary" },
+  };
+  const { text, color } = map[status] || { text: status, color: "dark" };
+  return `<span class="badge bg-${color}">${text}</span>`;
+};
 
 const createQuestionCardHTML = (question) => {
   return `
@@ -68,16 +114,25 @@ const createQuestionCardHTML = (question) => {
         <div class="row align-items-center">
           <div class="col-md-8">
             <h5 class="card-title">${question.title}</h5>
-            <p class="card-text text-muted">${question.statement.substring(0, 150)}...</p>
+            <p class="card-text text-muted">${question.statement.substring(
+              0,
+              150
+            )}...</p>
             <div class="d-flex flex-wrap gap-2">
               ${getStatusBadge(question.status)}
-              <span class="badge bg-info">${question.subjectArea || ''}</span>
+              <span class="badge bg-info">${question.subjectArea || ""}</span>
             </div>
           </div>
           <div class="col-md-4 text-end">
-            <button class="btn btn-sm btn-outline-primary" data-action="view" data-id="${question.id}">Ver</button>
-            <button class="btn btn-sm btn-outline-warning" data-action="edit" data-id="${question.id}">Editar</button>
-            <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${question.id}">Excluir</button>
+            <button class="btn btn-sm btn-outline-primary" data-action="view" data-id="${
+              question.id
+            }">Ver</button>
+            <button class="btn btn-sm btn-outline-warning" data-action="edit" data-id="${
+              question.id
+            }">Editar</button>
+            <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${
+              question.id
+            }">Excluir</button>
           </div>
         </div>
       </div>
@@ -90,21 +145,30 @@ export const renderQuestions = (questions) => {
     elements.questionsList.innerHTML = `<div class="alert alert-info">Nenhuma questão encontrada.</div>`;
     return;
   }
-  elements.questionsList.innerHTML = questions.map(createQuestionCardHTML).join('');
+  elements.questionsList.innerHTML = questions
+    .map(createQuestionCardHTML)
+    .join("");
 };
 
 export const updateDashboardStats = (questions) => {
-    elements.totalQuestions.textContent = questions.length;
-    elements.approvedQuestions.textContent = questions.filter(q => q.status === 'approved').length;
-    elements.pendingQuestions.textContent = questions.filter(q => q.status === 'pending').length;
-    elements.draftQuestions.textContent = questions.filter(q => q.status === 'draft').length;
+  elements.totalQuestions.textContent = questions.length;
+  elements.approvedQuestions.textContent = questions.filter(
+    (q) => q.status === "approved"
+  ).length;
+  elements.pendingQuestions.textContent = questions.filter(
+    (q) => q.status === "pending"
+  ).length;
+  elements.draftQuestions.textContent = questions.filter(
+    (q) => q.status === "draft"
+  ).length;
 };
 
 export const updateNavbar = (user) => {
-    if (user) {
-        elements.authLinks.classList.add('hidden');
-        elements.userMenu.classList.remove('hidden');
-        elements.userMenu.innerHTML = `
+  if (user) {
+    elements.authLinks.classList.add("hidden");
+    elements.userMenu.classList.remove("hidden");
+    setMainNavVisibility(true);
+    elements.userMenu.innerHTML = `
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">${user.name}</a>
               <ul class="dropdown-menu">
@@ -112,46 +176,49 @@ export const updateNavbar = (user) => {
               </ul>
             </li>
         `;
-    } else {
-        elements.authLinks.classList.remove('hidden');
-        elements.userMenu.classList.add('hidden');
-        elements.userMenu.innerHTML = '';
-    }
+  } else {
+    elements.authLinks.classList.remove("hidden");
+    elements.userMenu.classList.add("hidden");
+    setMainNavVisibility(false);
+    elements.userMenu.innerHTML = "";
+  }
 };
 
-export const showAlert = (message, type = 'success') => {
-    const alertContainer = document.createElement('div');
-    alertContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
-    alertContainer.style.zIndex = '1050';
-    alertContainer.innerHTML = `
+export const showAlert = (message, type = "success") => {
+  const alertContainer = document.createElement("div");
+  alertContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+  alertContainer.style.zIndex = "1050";
+  alertContainer.innerHTML = `
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-    document.body.append(alertContainer);
-    setTimeout(() => {
-        const bsAlert = bootstrap.Alert.getOrCreateInstance(alertContainer);
-        bsAlert.close();
-    }, 5000);
+  document.body.append(alertContainer);
+  setTimeout(() => {
+    const bsAlert = bootstrap.Alert.getOrCreateInstance(alertContainer);
+    bsAlert.close();
+  }, 5000);
 };
 
 export const populateEditForm = (question) => {
-    elements.editingQuestionId.value = question.id;
-    elements.questionTitle.value = question.title;
-    elements.questionStatement.value = question.statement;
-    showSection('create');
+  populateQuestionForm(question);
+  showSection("create");
 };
 
 export const clearCreateForm = () => {
-    elements.createQuestionForm.reset();
-    elements.editingQuestionId.value = '';
-}
+  elements.createQuestionForm.reset();
+  elements.editingQuestionId.value = "";
+  if (elements.questionSubjectArea) elements.questionSubjectArea.value = "";
+  if (elements.questionDifficulty) elements.questionDifficulty.value = "";
+  if (elements.questionSourceType) elements.questionSourceType.value = "manual";
+  if (elements.questionStatus) elements.questionStatus.value = "draft";
+};
 
 /**
  * Exibe o formulário principal e o overlay de carregamento, desabilitando os campos.
  */
 export const showFormLoader = () => {
-  elements.formContainer.classList.remove('hidden');
-  elements.formLoader.classList.remove('hidden');
+  elements.formContainer.classList.remove("hidden");
+  elements.formLoader.classList.remove("hidden");
   elements.formFieldset.disabled = true;
 };
 
@@ -159,7 +226,7 @@ export const showFormLoader = () => {
  * Esconde o overlay de carregamento e habilita os campos do formulário.
  */
 export const hideFormLoader = () => {
-  elements.formLoader.classList.add('hidden');
+  elements.formLoader.classList.add("hidden");
   elements.formFieldset.disabled = false;
 };
 
@@ -170,34 +237,52 @@ export const hideFormLoader = () => {
 export const populateQuestionForm = (question) => {
   // Limpa o formulário para garantir que não haja dados antigos
   elements.createQuestionForm.reset();
-  
-  elements.editingQuestionId.value = question.id || '';
-  elements.questionTitle.value = question.title || '';
-  elements.questionStatement.value = question.statement || '';
-  elements.correctAnswer.value = question.correctAnswer || '';
-  elements.explanation.value = question.explanation || '';
+
+  elements.formContainer.classList.remove("hidden");
+  elements.formFieldset.disabled = false;
+
+  elements.editingQuestionId.value = question.id || "";
+  elements.questionTitle.value = question.title || "";
+  elements.questionStatement.value = question.statement || "";
+  elements.correctAnswer.value = question.correctAnswer || "";
+  elements.explanation.value = question.explanation || "";
+
+  if (elements.questionSubjectArea) {
+    elements.questionSubjectArea.value =
+      question.subjectArea || elements.questionSubjectArea.value || "";
+  }
+  if (elements.questionDifficulty) {
+    elements.questionDifficulty.value =
+      question.difficultyLevel || elements.questionDifficulty.value || "";
+  }
+  if (elements.questionSourceType) {
+    elements.questionSourceType.value =
+      question.sourceType || elements.questionSourceType.value || "manual";
+  }
+  if (elements.questionStatus) {
+    elements.questionStatus.value =
+      question.status || elements.questionStatus.value || "draft";
+  }
 
   // Preenche as alternativas
-    for (const letter of ['A', 'B', 'C', 'D', 'E']) {
-        const input = elements.alternatives[letter];
-        if (input) {
-            input.value = question.alternatives?.[letter] || '';
-            console.log(`Alternativa ${letter} preenchida com:`, input.value);
-        } else {
-            console.warn(`Input da alternativa ${letter} não encontrado!`);
-        }
+  for (const letter of ["A", "B", "C", "D", "E"]) {
+    const input = elements.alternatives[letter];
+    if (input) {
+      input.value = question.alternatives?.[letter] || "";
+    } else {
+      console.warn(`Input da alternativa ${letter} não encontrado!`);
     }
+  }
 
-   // Preenche a resposta correta (apenas a letra)
-    if (question.correctAnswer) {
-        console.log("resposta correta: " + question.correctAnswer)
-        elements.correctAnswer.value = question.correctAnswer;
-    }
+  // Preenche a resposta correta (apenas a letra)
+  if (question.correctAnswer) {
+    elements.correctAnswer.value = question.correctAnswer;
+  }
 };
 
 export const showQuestionModal = (question) => {
   // Remove qualquer modal antigo para evitar acúmulo
-  const oldModal = document.getElementById('questionViewModal');
+  const oldModal = document.getElementById("questionViewModal");
   if (oldModal) {
     oldModal.remove();
   }
@@ -218,16 +303,28 @@ export const showQuestionModal = (question) => {
             <h6>Enunciado:</h6>
             <p>${question.statement}</p>
             <h6>Alternativas:</h6>
-            ${Object.entries(question.alternatives).map(([key, value]) => `
-              <div class="p-2 mb-2 rounded ${key === question.correctAnswer ? 'bg-success-subtle border border-success-subtle' : 'bg-light'}">
+            ${Object.entries(question.alternatives)
+              .map(
+                ([key, value]) => `
+              <div class="p-2 mb-2 rounded ${
+                key === question.correctAnswer
+                  ? "bg-success-subtle border border-success-subtle"
+                  : "bg-light"
+              }">
                 <strong>${key})</strong> ${value}
               </div>
-            `).join('')}
-            ${question.explanation ? `
+            `
+              )
+              .join("")}
+            ${
+              question.explanation
+                ? `
               <hr>
               <h6>Explicação:</h6>
               <p>${question.explanation}</p>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -238,14 +335,14 @@ export const showQuestionModal = (question) => {
   `;
 
   // Adiciona o HTML do modal ao corpo da página
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  document.body.insertAdjacentHTML("beforeend", modalHtml);
 
   // Usa a API do Bootstrap para controlar o modal
-  const modalElement = document.getElementById('questionViewModal');
+  const modalElement = document.getElementById("questionViewModal");
   const modal = new bootstrap.Modal(modalElement);
-  
+
   // Remove o elemento do DOM depois que o modal for fechado
-  modalElement.addEventListener('hidden.bs.modal', () => {
+  modalElement.addEventListener("hidden.bs.modal", () => {
     modalElement.remove();
   });
 
@@ -257,19 +354,19 @@ export const showQuestionModal = (question) => {
  * @param {File} file O objeto do arquivo selecionado.
  */
 export const showFilePreview = (file) => {
-  const previewContainer = document.getElementById('file-preview');
-  const uploadBtn = document.getElementById('upload-btn');
-  
+  const previewContainer = document.getElementById("file-preview");
+  const uploadBtn = document.getElementById("upload-btn");
+
   // Função para formatar o tamanho do arquivo
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  previewContainer.classList.remove('hidden');
+  previewContainer.classList.remove("hidden");
   previewContainer.innerHTML = `
     <div class="card bg-light">
       <div class="card-body d-flex align-items-center">
@@ -292,13 +389,13 @@ export const showFilePreview = (file) => {
  * Remove a pré-visualização do arquivo e desabilita o botão de upload.
  */
 export const removeFilePreview = () => {
-    const previewContainer = document.getElementById('file-preview');
-    const pdfFileInput = document.getElementById('pdf-file-input');
-    const uploadBtn = document.getElementById('upload-btn');
+  const previewContainer = document.getElementById("file-preview");
+  const pdfFileInput = document.getElementById("pdf-file-input");
+  const uploadBtn = document.getElementById("upload-btn");
 
-    if (previewContainer) previewContainer.classList.add('hidden');
-    if (pdfFileInput) pdfFileInput.value = ''; // Limpa o input de arquivo
-    if (uploadBtn) uploadBtn.disabled = true;
+  if (previewContainer) previewContainer.classList.add("hidden");
+  if (pdfFileInput) pdfFileInput.value = ""; // Limpa o input de arquivo
+  if (uploadBtn) uploadBtn.disabled = true;
 };
 
 /**
@@ -306,9 +403,9 @@ export const removeFilePreview = () => {
  * @param {boolean} isDragging Verdadeiro se um arquivo está sobre a área.
  */
 export const setUploadAreaDragState = (isDragging) => {
-    const uploadArea = document.getElementById('file-upload-area');
-    if (uploadArea) {
-        uploadArea.classList.toggle('border-primary', isDragging);
-        uploadArea.classList.toggle('bg-primary-subtle', isDragging);
-    }
+  const uploadArea = document.getElementById("file-upload-area");
+  if (uploadArea) {
+    uploadArea.classList.toggle("border-primary", isDragging);
+    uploadArea.classList.toggle("bg-primary-subtle", isDragging);
+  }
 };
