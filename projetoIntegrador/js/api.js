@@ -1,33 +1,12 @@
 // js/api.js
-import { getSampleQuestions } from "./sample-data.js";
 
 /**
- * Módulo responsável pela comunicação com a "fonte de dados".
- * Atualmente, simula uma API usando o localStorage do navegador.
- * QUANDO O BACK-END ESTIVER PRONTO, ESTE É O ÚNICO ARQUIVO A SER MODIFICADO.
+ * Módulo responsável pela comunicação com a API Flask (autenticação + questões).
  */
 
 const API_BASE_URL = "http://localhost:5000";
-const QUESTIONS_KEY = "medicalQuestions";
 const CURRENT_USER_KEY = "currentUser";
 const AUTH_TOKEN_KEY = "authToken";
-
-// Carrega as questões do localStorage ou usa os dados de exemplo
-const loadInitialQuestions = () => {
-  const savedQuestions = localStorage.getItem(QUESTIONS_KEY);
-  if (savedQuestions) {
-    return JSON.parse(savedQuestions);
-  }
-  const sampleQuestions = getSampleQuestions();
-  localStorage.setItem(QUESTIONS_KEY, JSON.stringify(sampleQuestions));
-  return sampleQuestions;
-};
-
-let questions = loadInitialQuestions();
-
-const persistQuestions = () => {
-  localStorage.setItem(QUESTIONS_KEY, JSON.stringify(questions));
-};
 
 const handleJsonResponse = async (response) => {
   let data = {};
@@ -61,40 +40,52 @@ const buildHeaders = (includeToken = false) => {
   return headers;
 };
 
+const authorizedFetch = async (path, options = {}) => {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error("Faça login para acessar este recurso.");
+  }
+  const headers = buildHeaders(true);
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers: { ...headers, ...(options.headers || {}) },
+  });
+  return handleJsonResponse(response);
+};
+
 // --- Funções Públicas da API ---
 
-export const fetchQuestions = () => {
-  // Em uma API real: return fetch('/api/questions').then(res => res.json());
-  return Promise.resolve(questions);
-};
-
-export const saveQuestion = (questionData) => {
-  // Lógica para criar ou atualizar uma questão
-  const existingIndex = questions.findIndex((q) => q.id === questionData.id);
-  if (existingIndex > -1) {
-    questions[existingIndex] = { ...questions[existingIndex], ...questionData };
-  } else {
-    questionData.id = Date.now();
-    questionData.createdAt = new Date().toISOString();
-    questions.push(questionData);
+export const fetchQuestions = async () => {
+  const token = getAuthToken();
+  if (!token) {
+    return [];
   }
-  persistQuestions();
-  return Promise.resolve(questionData);
-};
-
-export const deleteQuestion = (questionId) => {
-  questions = questions.filter((q) => q.id !== questionId);
-  persistQuestions();
-  return Promise.resolve({ success: true });
-};
-
-export const approveQuestion = (questionId) => {
-  const question = questions.find((q) => q.id === questionId);
-  if (question) {
-    question.status = "approved";
-    persistQuestions();
+  try {
+    const data = await authorizedFetch("/questions", { method: "GET" });
+    return data.questions || [];
+  } catch (error) {
+    if (error.message?.includes("login")) {
+      return [];
+    }
+    console.warn("Não foi possível carregar as questões:", error);
+    return [];
   }
-  return Promise.resolve(question);
+};
+
+export const saveQuestion = async (questionData) => {
+  const hasId = Boolean(questionData.id);
+  const path = hasId ? `/questions/${questionData.id}` : "/questions";
+  const method = hasId ? "PUT" : "POST";
+  const data = await authorizedFetch(path, {
+    method,
+    body: JSON.stringify(questionData),
+  });
+  return data.question;
+};
+
+export const deleteQuestion = async (questionId) => {
+  await authorizedFetch(`/questions/${questionId}`, { method: "DELETE" });
+  return { success: true };
 };
 
 export const login = async (email, password) => {

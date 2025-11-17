@@ -3,11 +3,27 @@ from flask_cors import CORS
 from werkzeug.security import check_password_hash
 
 try:
-    from .database import create_user, get_user_by_email, init_user_db
+    from .database import (
+        create_user,
+        create_user_question,
+        delete_user_question,
+        get_user_by_email,
+        init_user_db,
+        list_user_questions,
+        update_user_question,
+    )
     from .question_service import buscar_questoes_contexto, gerar_questao_llm
     from .security import generate_jwt, token_required
 except ImportError:
-    from database import create_user, get_user_by_email, init_user_db
+    from database import (
+        create_user,
+        create_user_question,
+        delete_user_question,
+        get_user_by_email,
+        init_user_db,
+        list_user_questions,
+        update_user_question,
+    )
     from question_service import buscar_questoes_contexto, gerar_questao_llm
     from security import generate_jwt, token_required
 
@@ -76,6 +92,52 @@ def login_user():
 @token_required
 def get_current_user():
     return jsonify({"user": g.current_user})
+
+
+def _validate_question_payload(data):
+    if not isinstance(data, dict):
+        raise ValueError("Dados inválidos para a questão.")
+    return data
+
+
+@app.route("/questions", methods=["GET"])
+@token_required
+def list_questions_endpoint():
+    questions = list_user_questions(g.current_user["id"])
+    return jsonify({"questions": questions})
+
+
+@app.route("/questions", methods=["POST"])
+@token_required
+def create_question_endpoint():
+    try:
+        data = _validate_question_payload(request.get_json() or {})
+        question = create_user_question(g.current_user["id"], data)
+    except ValueError as exc:
+        return jsonify({"message": str(exc)}), 400
+    return jsonify({"question": question}), 201
+
+
+@app.route("/questions/<int:question_id>", methods=["PUT"])
+@token_required
+def update_question_endpoint(question_id: int):
+    try:
+        data = _validate_question_payload(request.get_json() or {})
+        question = update_user_question(g.current_user["id"], question_id, data)
+    except ValueError as exc:
+        return jsonify({"message": str(exc)}), 400
+    except LookupError:
+        return jsonify({"message": "Questão não encontrada."}), 404
+    return jsonify({"question": question})
+
+
+@app.route("/questions/<int:question_id>", methods=["DELETE"])
+@token_required
+def delete_question_endpoint(question_id: int):
+    deleted = delete_user_question(g.current_user["id"], question_id)
+    if not deleted:
+        return jsonify({"message": "Questão não encontrada."}), 404
+    return jsonify({"success": True})
 
 
 init_user_db()

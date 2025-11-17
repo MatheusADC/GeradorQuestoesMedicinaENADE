@@ -28,6 +28,10 @@ const elements = {
   editingQuestionId: document.getElementById("editing-question-id"),
   questionTitle: document.getElementById("questionTitle"),
   questionStatement: document.getElementById("questionStatement"),
+  questionSubjectArea: document.getElementById("questionSubjectArea"),
+  questionDifficulty: document.getElementById("questionDifficulty"),
+  questionSourceType: document.getElementById("questionSourceType"),
+  questionStatus: document.getElementById("questionStatus"),
   promptForm: document.getElementById("prompt-form"),
   generateQuestionBtn: document.getElementById("generate-question-btn"),
   generateSpinner: document.getElementById("generate-spinner"),
@@ -36,7 +40,6 @@ const elements = {
   formContainer: document.getElementById("form-container"),
   formLoader: document.getElementById("form-loader"),
   formFieldset: document.getElementById("form-fieldset"),
-  createQuestionForm: document.getElementById("create-question-form"),
   correctAnswer: document.getElementById("correctAnswer"),
   explanation: document.getElementById("explanation"),
   alternatives: {
@@ -197,15 +200,17 @@ export const showAlert = (message, type = "success") => {
 };
 
 export const populateEditForm = (question) => {
-  elements.editingQuestionId.value = question.id;
-  elements.questionTitle.value = question.title;
-  elements.questionStatement.value = question.statement;
+  populateQuestionForm(question);
   showSection("create");
 };
 
 export const clearCreateForm = () => {
   elements.createQuestionForm.reset();
   elements.editingQuestionId.value = "";
+  if (elements.questionSubjectArea) elements.questionSubjectArea.value = "";
+  if (elements.questionDifficulty) elements.questionDifficulty.value = "";
+  if (elements.questionSourceType) elements.questionSourceType.value = "manual";
+  if (elements.questionStatus) elements.questionStatus.value = "draft";
 };
 
 /**
@@ -233,18 +238,37 @@ export const populateQuestionForm = (question) => {
   // Limpa o formulário para garantir que não haja dados antigos
   elements.createQuestionForm.reset();
 
+  elements.formContainer.classList.remove("hidden");
+  elements.formFieldset.disabled = false;
+
   elements.editingQuestionId.value = question.id || "";
   elements.questionTitle.value = question.title || "";
   elements.questionStatement.value = question.statement || "";
   elements.correctAnswer.value = question.correctAnswer || "";
   elements.explanation.value = question.explanation || "";
 
+  if (elements.questionSubjectArea) {
+    elements.questionSubjectArea.value =
+      question.subjectArea || elements.questionSubjectArea.value || "";
+  }
+  if (elements.questionDifficulty) {
+    elements.questionDifficulty.value =
+      question.difficultyLevel || elements.questionDifficulty.value || "";
+  }
+  if (elements.questionSourceType) {
+    elements.questionSourceType.value =
+      question.sourceType || elements.questionSourceType.value || "manual";
+  }
+  if (elements.questionStatus) {
+    elements.questionStatus.value =
+      question.status || elements.questionStatus.value || "draft";
+  }
+
   // Preenche as alternativas
   for (const letter of ["A", "B", "C", "D", "E"]) {
     const input = elements.alternatives[letter];
     if (input) {
       input.value = question.alternatives?.[letter] || "";
-      console.log(`Alternativa ${letter} preenchida com:`, input.value);
     } else {
       console.warn(`Input da alternativa ${letter} não encontrado!`);
     }
@@ -252,7 +276,6 @@ export const populateQuestionForm = (question) => {
 
   // Preenche a resposta correta (apenas a letra)
   if (question.correctAnswer) {
-    console.log("resposta correta: " + question.correctAnswer);
     elements.correctAnswer.value = question.correctAnswer;
   }
 };

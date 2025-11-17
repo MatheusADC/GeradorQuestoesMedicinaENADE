@@ -42,7 +42,14 @@ async function handlePromptFormSubmit(e) {
     }
 
     const data = await response.json();
-    ui.populateQuestionForm(data);
+    const generatedQuestion = {
+      ...data,
+      subjectArea: especialidade,
+      difficultyLevel: dificuldade,
+      status: "draft",
+      sourceType: "ia-generated",
+    };
+    ui.populateQuestionForm(generatedQuestion);
   } catch (error) {
     console.error("Erro ao gerar questão:", error);
     ui.showAlert(
@@ -57,9 +64,78 @@ async function handlePromptFormSubmit(e) {
 
 async function handleCreateQuestionSubmit(e) {
   e.preventDefault();
-  // ... Lógica para salvar a questão ...
-  ui.showAlert("Questão salva com sucesso!");
-  ui.showSection("questions");
+  const { currentUser } = state.getState();
+  if (!currentUser) {
+    ui.showAlert("Faça login para salvar questões.", "warning");
+    ui.showSection("login");
+    return;
+  }
+
+  const editingId = document.getElementById("editing-question-id").value;
+  const title = document.getElementById("questionTitle").value.trim();
+  const statement = document.getElementById("questionStatement").value.trim();
+  const correctAnswer = document
+    .getElementById("correctAnswer")
+    .value.trim()
+    .toUpperCase();
+  const explanation = document.getElementById("explanation").value.trim();
+
+  const subjectAreaHidden = document
+    .getElementById("questionSubjectArea")
+    .value.trim();
+  const difficultyHidden = document
+    .getElementById("questionDifficulty")
+    .value.trim();
+  const sourceTypeHidden = document
+    .getElementById("questionSourceType")
+    .value.trim();
+  const statusHidden = document.getElementById("questionStatus").value.trim();
+
+  const subjectAreaSelect = document.getElementById("subjectArea");
+  const difficultySelect = document.getElementById("difficultyLevel");
+  const subjectAreaFallback = subjectAreaSelect
+    ? subjectAreaSelect.value.trim()
+    : "";
+  const difficultyFallback = difficultySelect
+    ? difficultySelect.value.trim()
+    : "";
+
+  const alternatives = {
+    A: document.getElementById("alternativeA").value.trim(),
+    B: document.getElementById("alternativeB").value.trim(),
+    C: document.getElementById("alternativeC").value.trim(),
+    D: document.getElementById("alternativeD").value.trim(),
+    E: document.getElementById("alternativeE").value.trim(),
+  };
+
+  const payload = {
+    id: editingId ? Number(editingId) : undefined,
+    title,
+    statement,
+    alternatives,
+    correctAnswer,
+    explanation,
+    subjectArea: subjectAreaHidden || subjectAreaFallback,
+    difficultyLevel: difficultyHidden || difficultyFallback,
+    sourceType: sourceTypeHidden || "manual",
+    status: statusHidden || "draft",
+  };
+
+  try {
+    await api.saveQuestion(payload);
+    const questions = await api.fetchQuestions();
+    state.setQuestions(questions);
+    ui.renderQuestions(questions);
+    ui.updateDashboardStats(questions);
+    ui.showAlert("Questão salva com sucesso!");
+    ui.showSection("questions");
+    ui.clearCreateForm();
+  } catch (error) {
+    ui.showAlert(
+      error.message || "Não foi possível salvar a questão.",
+      "danger"
+    );
+  }
 }
 
 async function handleLogin(e) {
@@ -73,6 +149,7 @@ async function handleLogin(e) {
     state.setQuestions(questions);
     ui.updateNavbar(user);
     ui.updateDashboardStats(questions);
+    ui.renderQuestions(questions);
     ui.showSection("dashboard");
     ui.showAlert(`Bem-vindo, ${user.name}!`);
   } catch (err) {
@@ -93,6 +170,7 @@ async function handleRegister(e) {
     state.setQuestions(questions);
     ui.updateNavbar(user);
     ui.updateDashboardStats(questions);
+    ui.renderQuestions(questions);
     ui.showSection("dashboard");
     ui.showAlert("Conta criada com sucesso! Bem-vindo(a).");
   } catch (error) {
@@ -103,6 +181,10 @@ async function handleRegister(e) {
 async function handleLogout() {
   await api.logout();
   state.setCurrentUser(null);
+  const questions = await api.fetchQuestions();
+  state.setQuestions(questions);
+  ui.renderQuestions(questions);
+  ui.updateDashboardStats(questions);
   ui.updateNavbar(null);
   ui.showSection("home");
   ui.showAlert("Você saiu da sua conta.", "info");
@@ -129,14 +211,21 @@ async function handleEditQuestion(id) {
 
 async function handleDeleteQuestion(id) {
   if (confirm("Tem certeza que deseja excluir esta questão?")) {
-    await api.deleteQuestion(id);
-    const questions = await api.fetchQuestions();
-    state.setQuestions(questions);
+    try {
+      await api.deleteQuestion(id);
+      const questions = await api.fetchQuestions();
+      state.setQuestions(questions);
 
-    // Atualiza a UI para refletir a exclusão
-    ui.renderQuestions(questions);
-    ui.updateDashboardStats(questions);
-    ui.showAlert("Questão excluída com sucesso!");
+      // Atualiza a UI para refletir a exclusão
+      ui.renderQuestions(questions);
+      ui.updateDashboardStats(questions);
+      ui.showAlert("Questão excluída com sucesso!");
+    } catch (error) {
+      ui.showAlert(
+        error.message || "Não foi possível excluir a questão.",
+        "danger"
+      );
+    }
   }
 }
 
