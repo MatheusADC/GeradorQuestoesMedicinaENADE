@@ -43,7 +43,7 @@ python server.py
 > [!WARNING]  
 > A opção fica no menu lateral, na aba **Developer**.
 
-## Autenticação e usuários
+# <sub><img src="https://img.icons8.com/?size=100&id=kaKRzcrhrOu6&format=png&color=000000" width="34" /></sub> Autenticação e usuários
 
 - **Cadastro**: o formulário "Cadastro de Médico" agora envia `nome`, `email` e `senha` para `POST /register`. A senha é armazenada com hash dentro de `usuarios.db`.
 - **Login**: o formulário de login chama `POST /login`, que devolve um JWT (`Authorization: Bearer ...`). O token é guardado no `localStorage` do navegador e enviado automaticamente para rotas protegidas.
